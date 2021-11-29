@@ -7,6 +7,9 @@
 - [x] mini-LeiUI
 - [ ] mini-Vuex
 - [ ] mini-VueRouter
+- [ ] mini-Webpack
+- [ ] mini-Complier
+- [ ] mini-vDom
 
 ## 实现 mini-LeiUI
 
