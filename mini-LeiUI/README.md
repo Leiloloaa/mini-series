@@ -1,5 +1,9 @@
 # 实现 mini-LeiUI
 
+## 实现 basic 和 form 组件
+
+**button 和 input**
+
 **效果**
 
 我们只需要全局引用之后，在组件中便可以不声明就直接使用。
@@ -55,3 +59,15 @@ const LeiUI = {
 
 export default LeiUI
 ```
+
+## 实现 data 组件
+
+**轮播图 carousel**
+
+- 传统的轮播图是没有动画的
+  - 一张张图排列，到最后一张图的时候，第一张图瞬移到末尾
+- Vue3 中的轮播图，可以利用 Vue3 提供的 transition 过度动画
+  - 第一张要出去之前，第二张准备进来
+  - 第一站完全出去之后，第二张就完全进来
+  - v-leave-to，v-enter-to 
+  - v-leave-from，v-enter-from
