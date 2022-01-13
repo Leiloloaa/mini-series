@@ -3,11 +3,25 @@
     <div class="inner">
       <slot></slot>
     </div>
+<<<<<<< HEAD
+
+=======
+>>>>>>> c599be4fbba6b7f2eab69d3d45f466ea4f4bbcdb
   </div>
 </template>
 
 <script>
+<<<<<<< HEAD
+import {
+  getCurrentInstance,
+  reactive,
+  toRaw,
+  onMounted,
+  onBeforeUnmount,
+} from "vue";
+=======
 import { getCurrentInstance, reactive, toRaw, onMounted, onBeforeUnmount } from "vue";
+>>>>>>> c599be4fbba6b7f2eab69d3d45f466ea4f4bbcdb
 export default {
   name: "LCarousel",
   props: {
@@ -34,6 +48,10 @@ export default {
   },
   setup(props) {
     const instance = getCurrentInstance();
+<<<<<<< HEAD
+    // console.log(instance);
+=======
+>>>>>>> c599be4fbba6b7f2eab69d3d45f466ea4f4bbcdb
     const state = reactive({
       currentIndex: props.initial,
       itemLen: 0,
@@ -43,17 +61,29 @@ export default {
     const autoPlay = () => {
       if (props.autoplay) {
         t = setInterval(() => {
+<<<<<<< HEAD
+          // 临界点和方向
+=======
+>>>>>>> c599be4fbba6b7f2eab69d3d45f466ea4f4bbcdb
           setIndex("next");
         }, props.duration);
       }
     };
     const setIndex = (dir) => {
+<<<<<<< HEAD
+      console.log(dir);
+=======
+>>>>>>> c599be4fbba6b7f2eab69d3d45f466ea4f4bbcdb
       switch (dir) {
         case "next":
           state.currentIndex += 1;
           if (state.currentIndex === state.itemLen) {
             state.currentIndex = 0;
           }
+<<<<<<< HEAD
+          console.log(state.currentIndex);
+=======
+>>>>>>> c599be4fbba6b7f2eab69d3d45f466ea4f4bbcdb
           break;
         case "prev":
           state.currentIndex -= 1;
