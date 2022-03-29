@@ -10,6 +10,8 @@
 - [x] mini-vdom
   - [x] snabbdom
 - [x] mini-webpack
+  - [x] loader
+  - [x] plugin
 - [ ] mini-vuex
 - [ ] mini-vueRouter
 

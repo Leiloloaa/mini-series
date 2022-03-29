@@ -209,3 +209,80 @@ export function jsonLoader(source) {
 - 提取通用代码。
 - 避免绝对路径。
 - 使用 peer dependencies。
+
+## 实现 plugin
+
+**plugin 和 loader 的区别**
+
+- loader 是运行在项目打包文件之前，预编译阶段去处理相应 loader 的文件
+  - webpack 只会处理 js 文件，对于 css、json 等资源需要用到相应的 loader 处理
+- plugin 则是运行在 webpack 的整个生命周期，webpack 在打包的过程中会发出一系列的 hooks，通过事件监听这些 hooks，做出处理
+  - 从打包优化和压缩，到重新定义环境变量，功能强大到可以用来处理各种各样的任务
+
+> webpack 提供了很多开箱即用的插件：CommonChunkPlugin 主要用于提取第三方库和公共模块，避免首屏加载的 bundle 文件或者按需加载的 bundle 文件体积过大，导致加载时间过长，是一把优化的利器。而在多页面应用中，更是能够为每个页面间的应用程序共享代码创建 bundle。插件可以携带参数，所以在 plugins 属性传入 new 实例。
+
+**常用的 plugin**
+
+- html-webpack-plugin 
+  - 作用是：当使用 webpack打包时，创建一个 html 文件，并把 webpack 打包后的静态文件自动插入到这个 html 文件当中
+  - html-webpack-plugin 默认将会在 output.path 的目录下创建一个 index.html 文件， 并在这个文件中插入一个 script 标签，标签的 src 为 output.filename
+- HotModuleReplacementPlugin
+  - 模块热更新插件。Hot-Module-Replacement 的热更新是依赖于 webpack-dev-server，后者是在打包文件改变时更新打包文件或者 reload 刷新整个页面，HRM 是只更新修改的部分。
+- clean-webpack-plugin
+  - clean-webpack-plugin 用于在打包前清理上一次项目生成的 bundle 文件，它会根据 output.path 自动清理文件夹；这个插件在生产环境用的频率非常高，因为生产环境经常会通过 hash 生成很多 bundle 文件，如果不进行清理的话每次都会生成新的，导致文件夹非常庞大。
+
+### 实现修改默认打包路径 plugin
+
+- 安装 tapable 引入 SyncHook
+```js
+npm install tapable
+import { SyncHook } from 'tapable';
+const hooks = {
+    emitFile: new SyncHook()
+    // emitFile: new SyncHook(['context']) 后面需要加入 context
+}
+```
+- 新建 ChangeOutputPath 文件并导出一个类，里面需要实现 apply 方法
+- 配置 webpackConfig
+```js
+import { ChangeOutputPath } from './ChangeOutputPath.js';
+const webpackConfig = {
+    plugins: [new ChangeOutputPath()]
+}
+```
+- 初始化 plugins
+```js
+function initPlugins() {
+    const plugins = webpackConfig.plugins
+    plugins.forEach((plugin) => {
+        plugin.apply(hooks)
+    })
+}
+
+initPlugins()
+```
+- 在 build 函数内修改
+```js
+function build(graph) {
+    ...
+    let outputPath = './dist/bundle.js'
+    const context = {
+        changeOutputPath(path) {
+            outputPath = path
+        }
+    }
+    hooks.emitFile.call(context)
+    fs.writeFileSync(outputPath, code);
+}
+```
+- 修改 ChangeOutputPath 文件
+```js
+export class ChangeOutputPath {
+    apply(hooks) {
+        hooks.emitFile.tap('changeOutputPath', (context) => {
+            console.log('----changeOutputPath');
+            context.changeOutputPath('./dist/stone.js')
+        })
+    }
+};
+```
