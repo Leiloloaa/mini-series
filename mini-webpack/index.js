@@ -1,12 +1,12 @@
-import fs from 'fs';
-import path from 'path';
 import parser from '@babel/parser';
 import traverse from '@babel/traverse';
 import { transformFromAst } from 'babel-core';
 import ejs from 'ejs';
-import { jsonLoader } from './jsonLoader.js';
-import { ChangeOutputPath } from './ChangeOutputPath.js';
+import fs from 'fs';
+import path from 'path';
 import { SyncHook } from 'tapable';
+import { ChangeOutputPath } from './ChangeOutputPath.js';
+import { jsonLoader } from './jsonLoader.js';
 // console.log(traverse.default);
 // 初始值 id  创建一个就 加一 就可以了
 let id = 0;
@@ -106,6 +106,16 @@ const graph = createGraph();
 // console.log(graph);
 
 function build(graph) {
+    // 文件不存在，就创建
+    fs.access("./dist/", fs.constants.F_OK, (res) => {
+        if (res) {
+            fs.mkdir("./dist/", function(err) {
+                if (err) {
+                    return console.error(err);
+                }
+            });
+        }
+    });
     const template = fs.readFileSync('./bundle.ejs', { encoding: 'utf-8' });
     // 创建模板数据
     const data = graph.map(asset => {
@@ -119,13 +129,14 @@ function build(graph) {
     // 指向 id
     const code = ejs.render(template, { data });
 
-    let outputPath = './dist/bundle.js'
-    const context = {
-        changeOutputPath(path) {
-            outputPath = path
-        }
-    }
-    hooks.emitFile.call(context)
+    let outputPath = './dist/bundle.js';
+    // 使用修改打包路径的 plugins
+    // const context = {
+    //     changeOutputPath(path) {
+    //         outputPath = path
+    //     }
+    // }
+    // hooks.emitFile.call(context)
     fs.writeFileSync(outputPath, code);
 }
 

@@ -286,3 +286,11 @@ export class ChangeOutputPath {
     }
 };
 ```
+
+## 打包遇到的问题
+
+> SyntaxError: The requested module 'tapable' is expected to be of type CommonJS, which does not support named exports. CommonJS modules can be imported by importing the default export.  
+
+这表示需要使用 commonJS 的规范进行导出，但是，在 npm init -y 的时候，我们修改了 package.json 中的 type，改成了 module，表示支持 ESM。所以这时候，你需要检查自己电脑的 node 版本，至少要升至 14 版本，node 才可以支持 ESM 规范(19年 node 发布的 13.2.0 版本开始支持了 ESM)。
+
+**使用 node ./index.js 进行打包**
